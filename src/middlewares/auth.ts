@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Response, Request, NextFunction } from "express";
 import "dotenv/config";
-import { ApiErrorResponse } from "types";
+import { ApiErrorResponse } from "../types";
 
 const auth = (req: Request, res: Response, next: NextFunction) => {
   const token: string | string[] | undefined = req.headers["x-auth-token"];
@@ -19,6 +19,7 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
       typeof token === "object" ? token[0] : token,
       process.env.JWT_SECRET ?? ""
     );
+    req.headers["user"] = payload;
     next(payload);
   } catch (error) {
     const response: ApiErrorResponse = {
