@@ -1,7 +1,29 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 import Joi from "joi";
+import jwt from "jsonwebtoken";
+import "dotenv/config";
 
-const userSchema = new mongoose.Schema(
+const JWT_PRIVATE_KEY: string | undefined = process.env.JWT_PRIVATE_KEY;
+if (!JWT_PRIVATE_KEY) {
+  throw new Error("JWT_PRIVATE_KEY .env variable not defined!");
+}
+
+interface IUser {
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+}
+
+interface IUserDocument extends IUser, Document {
+  generateAuthToken: () => string;
+}
+
+interface IUserModel extends Model<IUserDocument> {
+  findByEmail: (email: string) => Promise<IUserDocument>;
+}
+
+const userSchema: Schema<IUserDocument> = new mongoose.Schema(
   {
     firstname: {
       type: String,
@@ -37,15 +59,34 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const validateUser = (body: any) => {
+userSchema.methods.generateAuthToken = function (): string {
+  const token = jwt.sign({ _id: this._id }, JWT_PRIVATE_KEY);
+  return token;
+};
+
+userSchema.statics.findByEmail = function (
+  email: string
+): Promise<IUserDocument> {
+  return this.findOne({ email });
+};
+
+export const validateNewUser = (body: any) => {
   const userSchema = Joi.object({
     firstname: Joi.string().lowercase().trim().min(3).max(255).required(),
     lastname: Joi.string().lowercase().trim().min(3).max(255).required(),
     email: Joi.string().email().lowercase().trim().required(),
-    password: Joi.string().min(6).required()
+    password: Joi.string().min(6).required(),
   });
   return userSchema.validate(body);
-}
+};
 
-const User = mongoose.model("User", userSchema);
+export const validateLogin = (body: any) => {
+  const loginSchema = Joi.object({
+    email: Joi.string().email().lowercase().trim().required(),
+    password: Joi.string().min(1).required(),
+  });
+  return loginSchema.validate(body);
+};
+
+const User = mongoose.model<IUserDocument, IUserModel>("User", userSchema);
 export default User;

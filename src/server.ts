@@ -1,15 +1,14 @@
 import express, { Request, Response } from "express";
+import connectToDatabase from "./utils/db";
 import AuthRouter from "./routes/auth.route";
 import UserRouter from "./routes/user.route";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(express.json());
-app.get("/", (req: Request, res: Response) => {
-  res.send("Welcome to Retain");
-});
+// connectToDatabase();
 
+app.use(express.json());
 app.use("/api/auth", AuthRouter);
 app.use("/api/user", UserRouter);
 
