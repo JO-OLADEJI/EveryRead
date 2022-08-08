@@ -20,7 +20,7 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
       process.env.JWT_SECRET ?? ""
     );
     req.headers["user"] = payload;
-    next(payload);
+    next();
   } catch (error) {
     const response: ApiErrorResponse = {
       success: false,

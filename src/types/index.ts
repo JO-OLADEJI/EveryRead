@@ -1,11 +1,16 @@
 interface BaseResponse {
-  success: boolean
+  success: boolean;
 }
 
 export interface ApiErrorResponse extends BaseResponse {
-  error: Object | string
+  error: Object | string;
 }
 
 export interface ApiResultResponse extends BaseResponse {
-  result: Object | string
+  result: Object | string;
+}
+
+export interface JwtPayload {
+  _id: string;
+  iat: number;
 }

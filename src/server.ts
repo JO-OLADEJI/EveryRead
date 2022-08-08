@@ -10,6 +10,6 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use("/api/auth", AuthRouter);
-app.use("/api/user", UserRouter);
+app.use("/api/users", UserRouter);
 
 app.listen(PORT, () => console.log(`App running on http://localhost:${PORT}/`));
