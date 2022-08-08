@@ -66,7 +66,6 @@ class UserController {
 
   getSelf = async (req: Request, res: Response) => {
     const payload: JwtPayload = req.headers["user"]! as unknown as JwtPayload;
-    console.log(payload._id);
 
     const user = await User.findById(payload._id);
     if (!user) {
@@ -83,7 +82,21 @@ class UserController {
 
   updateSelf = async (req: Request, res: Response) => {};
 
-  deleteSelf = async (req: Request, res: Response) => {};
+  deleteSelf = async (req: Request, res: Response) => {
+    const payload: JwtPayload = req.headers["user"]! as unknown as JwtPayload;
+
+    const user = await User.deleteOne({ _id: payload._id });
+    if (!user) {
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "user not found",
+      };
+      return res.status(404).json(errorResponse);
+    }
+
+    const resultResponse: ApiResultResponse = { success: true, result: user };
+    res.status(200).json(resultResponse);
+  };
 }
 
 const userController = new UserController();
