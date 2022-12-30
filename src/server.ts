@@ -6,7 +6,7 @@ import UserRouter from "./routes/user.route";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// connectToDatabase();
+connectToDatabase();
 
 app.use(express.json());
 app.use("/api/auth", AuthRouter);

@@ -20,7 +20,7 @@ interface IUserDocument extends IUser, Document {
 }
 
 interface IUserModel extends Model<IUserDocument> {
-  findByEmail: (email: string) => Promise<IUserDocument>;
+  findOneByEmail: (email: string) => Promise<IUserDocument>;
 }
 
 const userSchema: Schema<IUserDocument> = new mongoose.Schema(
@@ -60,11 +60,14 @@ const userSchema: Schema<IUserDocument> = new mongoose.Schema(
 );
 
 userSchema.methods.generateAuthToken = function (): string {
-  const token = jwt.sign({ _id: this._id }, JWT_PRIVATE_KEY);
+  const token = jwt.sign(
+    { _id: this._id, password: this.password },
+    JWT_PRIVATE_KEY
+  );
   return token;
 };
 
-userSchema.statics.findByEmail = function (
+userSchema.statics.findOneByEmail = function (
   email: string
 ): Promise<IUserDocument> {
   return this.findOne({ email });
@@ -76,6 +79,16 @@ export const validateNewUser = (body: any) => {
     lastname: Joi.string().lowercase().trim().min(3).max(255).required(),
     email: Joi.string().email().lowercase().trim().required(),
     password: Joi.string().min(6).required(),
+    // there should be a code sent to email for validation
+  });
+  return userSchema.validate(body);
+};
+
+export const validateUserUpdate = (body: any) => {
+  const userSchema = Joi.object({
+    firstname: Joi.string().lowercase().trim().min(3).max(255).optional(),
+    lastname: Joi.string().lowercase().trim().min(3).max(255).optional(),
+    password: Joi.string().min(6).optional(),
   });
   return userSchema.validate(body);
 };
@@ -83,10 +96,10 @@ export const validateNewUser = (body: any) => {
 export const validateLogin = (body: any) => {
   const loginSchema = Joi.object({
     email: Joi.string().email().lowercase().trim().required(),
-    password: Joi.string().min(1).required(),
+    password: Joi.string().min(6).required(),
   });
   return loginSchema.validate(body);
 };
 
-const User = mongoose.model<IUserDocument, IUserModel>("User", userSchema);
+const User = mongoose.model<IUserDocument, IUserModel>("users", userSchema);
 export default User;

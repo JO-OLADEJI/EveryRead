@@ -4,8 +4,8 @@ import UserController from "../controllers/user.controller";
 
 const router: Router = express.Router();
 
-router.get("/", auth, UserController.getSelf);
+router.get("/me", auth, UserController.getSelf);
+router.put("/update", auth, UserController.updateSelf);
 router.delete("/delete", auth, UserController.deleteSelf);
-router.patch("/update", auth, UserController.updateSelf);
 
 export default router;

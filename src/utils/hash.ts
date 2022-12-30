@@ -6,7 +6,7 @@ export const hash = async (value: string): Promise<string> => {
   return hashed;
 };
 
-export const compareHash = async (
+export const comparePassword = async (
   value: string,
   hash: string
 ): Promise<boolean> => {
