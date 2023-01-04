@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 import { Response, Request, NextFunction } from "express";
 import { ApiErrorResponse, JwtPayload } from "../types";
-import User from "../models/user.model";
-import * as dotenv from "dotenv";
-dotenv.config();
+import User from "../models/User.model";
+import "dotenv/config";
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   const errorResponse: ApiErrorResponse = { success: false, error: "" };
