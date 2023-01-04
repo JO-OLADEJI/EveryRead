@@ -4,7 +4,7 @@ import User, {
   validateNewUser,
   validateUserUpdate,
   validateLogin,
-} from "../models/user.model";
+} from "../models/User.model";
 import { hash, comparePassword } from "../utils/hash";
 
 class UserController {

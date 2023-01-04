@@ -1,3 +1,5 @@
+import { ObjectId } from "mongoose";
+
 interface BaseResponse {
   success: boolean;
 }
@@ -11,7 +13,7 @@ export interface ApiSuccessResponse extends BaseResponse {
 }
 
 export interface JwtPayload {
-  _id: string;
+  _id: ObjectId | string;
   iat: number;
   password: string;
 }

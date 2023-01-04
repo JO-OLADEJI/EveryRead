@@ -23,7 +23,7 @@ interface IUserModel extends Model<IUserDocument> {
   findOneByEmail: (email: string) => Promise<IUserDocument>;
 }
 
-const userSchema: Schema<IUserDocument> = new mongoose.Schema(
+const userSchema: Schema<IUserDocument> = new Schema(
   {
     firstname: {
       type: String,
