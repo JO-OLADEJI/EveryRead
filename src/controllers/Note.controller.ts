@@ -3,6 +3,7 @@ import { ObjectId } from "mongoose";
 import { ApiErrorResponse, ApiSuccessResponse, JwtPayload } from "../types";
 import Note, { validateNote } from "../models/Note.model";
 import Excerpt, { validateExcerpt } from "../models/Excerpt.model";
+import AutomateController from "./Automate.controller";
 
 class NoteController {
   // create a new note
@@ -59,6 +60,10 @@ class NoteController {
         errorResponse.error = "note not found";
         return res.status(400).json(errorResponse);
       }
+
+      // there should be a call to AutomateController.scheduleSpacedReminders() for the created excerpt
+      // schedule spaced repitition intervals for excerpt
+      const isScheduled: boolean = await AutomateController.scheduleSpacedReminders(excerpt._id);
 
       const { content } = excerpt;
       successResponse.result = { content, note: noteId };
@@ -166,6 +171,8 @@ class NoteController {
         errorResponse.error = "excerpt not found";
         return res.status(400).json(errorResponse);
       }
+
+      // there should be a call to AutomateController.scheduleSpacedReminders() for the updated excerpt
 
       const { content, note } = excerpt;
       successResponse.result = { content, note };
