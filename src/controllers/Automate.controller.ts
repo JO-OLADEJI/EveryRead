@@ -1,9 +1,10 @@
 import { ObjectId } from "mongoose";
-import { ApiErrorResponse, ApiSuccessResponse } from "../types";
+import cron from "node-cron";
 import Excerpt from "../models/Excerpt.model";
 
 class AutomateController {
   NUMBER_OF_PRESET_REVIEWS = 20;
+  SCHEDULED_TASKS = {};
 
   getReviewTimestamp = (
     nthReview: number,
@@ -17,13 +18,9 @@ class AutomateController {
   };
 
   scheduleSpacedReminders = async (excerptId: ObjectId): Promise<boolean> => {
-    const successResponse: ApiSuccessResponse = { success: true, result: "" };
-    const errorResponse: ApiErrorResponse = { success: false, error: "" };
-
     // - read timestamp excerpt was last updated
     const excerpt = await Excerpt.findById(excerptId);
     if (!excerpt) {
-      errorResponse.error = "excerpt not found";
       return false;
     }
 
@@ -37,6 +34,11 @@ class AutomateController {
     }
 
     // - queue (cron jobs) reminders for excerpt
+    // 1. convert each timestamp to parsable node-cron string
+    // 2. schedule 20 tasks for excerpt and track all tasks in an array
+    // 3. add cron tasks to the SCHEDULED_TASKS object
+
+    // cron.schedule()
 
     return true;
   };

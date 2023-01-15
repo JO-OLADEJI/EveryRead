@@ -61,7 +61,6 @@ class NoteController {
         return res.status(400).json(errorResponse);
       }
 
-      // there should be a call to AutomateController.scheduleSpacedReminders() for the created excerpt
       // schedule spaced repitition intervals for excerpt
       const isScheduled: boolean = await AutomateController.scheduleSpacedReminders(excerpt._id);
 
@@ -172,7 +171,8 @@ class NoteController {
         return res.status(400).json(errorResponse);
       }
 
-      // there should be a call to AutomateController.scheduleSpacedReminders() for the updated excerpt
+      // schedule spaced repitition intervals for excerpt
+      const isScheduled: boolean = await AutomateController.scheduleSpacedReminders(excerpt._id);
 
       const { content, note } = excerpt;
       successResponse.result = { content, note };
