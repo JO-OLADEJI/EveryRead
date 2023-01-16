@@ -62,7 +62,12 @@ class NoteController {
       }
 
       // schedule spaced repitition intervals for excerpt
-      const isScheduled: boolean = await AutomateController.scheduleSpacedReminders(excerpt._id);
+      const isScheduled: boolean =
+        await AutomateController.scheduleSpacedReminders(excerpt._id);
+      if (!isScheduled) {
+        errorResponse.error = "error scheduling reminders for excerpt";
+        return res.status(400).json(errorResponse);
+      }
 
       const { content } = excerpt;
       successResponse.result = { content, note: noteId };
@@ -172,7 +177,12 @@ class NoteController {
       }
 
       // schedule spaced repitition intervals for excerpt
-      const isScheduled: boolean = await AutomateController.scheduleSpacedReminders(excerpt._id);
+      const isScheduled: boolean =
+        await AutomateController.scheduleSpacedReminders(excerpt._id);
+      if (!isScheduled) {
+        errorResponse.error = "error scheduling reminders for excerpt";
+        return res.status(400).json(errorResponse);
+      }
 
       const { content, note } = excerpt;
       successResponse.result = { content, note };
@@ -190,13 +200,18 @@ class NoteController {
 
     try {
       const noteId: string = req.params["id"];
-
-      // - delete note excerpts
       const note = await Note.findById(noteId);
       if (!note) {
         errorResponse.error = "note not found";
         return res.status(400).json(errorResponse);
       }
+
+      // - clear scheduled tasks for all excerpts in note
+      note.summary.forEach((excerpt) => {
+        AutomateController.clearSpacedReminders(excerpt);
+      });
+
+      // - delete note excerpts
       const excerptsDeleteResult = await Note.deleteMany({
         _id: { $in: note.summary },
       });
@@ -252,6 +267,9 @@ class NoteController {
         errorResponse.error = "error deleting excerpt";
         return res.status(400).json(errorResponse);
       }
+
+      // - clear scheduled tasks for excerpt
+      AutomateController.clearSpacedReminders(excerpt._id);
 
       // - delete excerpt iteself
       const deletedExcerpt = await Excerpt.findByIdAndDelete(excerptId, {
