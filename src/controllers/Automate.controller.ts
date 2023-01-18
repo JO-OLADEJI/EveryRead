@@ -1,3 +1,6 @@
+// 1. Add nodemailer to email excerpts
+// 2. Batch excerpts together in a mail [3 times mailing in a day]
+
 import { ObjectId } from "mongoose";
 import cron, { ScheduledTask } from "node-cron";
 import Excerpt from "../models/Excerpt.model";
@@ -14,7 +17,6 @@ class AutomateController {
     nthReview: number,
     msTimestampOfFirstLearning: number
   ) => {
-    // const now = new Date().valueOf();
     const timezoneOffeset = new Date().getTimezoneOffset();
     const msLocalTimestampOfFirstLearning =
       msTimestampOfFirstLearning + timezoneOffeset * 60 * 1000 * -1;
