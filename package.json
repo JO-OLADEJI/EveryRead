@@ -1,12 +1,12 @@
 {
-  "name": "retain",
+  "name": "everyread",
   "version": "1.0.0",
   "main": "dist/server.js",
-  "repository": "https://github.com/analogdev-eth/Retain.git",
-  "author": "analogdev.eth <dejijolaoluwa@gmail.com>",
+  "repository": "https://github.com/analogdev-eth/EveryRead.git",
+  "author": "Joshua Oladeji <dejijolaoluwa@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev-start": "concurrently \"npx tsc --watch\" \"nodemon dist/server.js\""
+    "dev-start": "concurrently \"npx tsc --watch\" \"nodemon dist/src/server.js\""
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -19,12 +19,14 @@
   },
   "dependencies": {
     "@types/node-cron": "^3.0.7",
+    "@types/nodemailer": "^6.4.7",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.5.1",
-    "node-cron": "^3.0.2"
+    "node-cron": "^3.0.2",
+    "nodemailer": "^6.9.0"
   }
 }

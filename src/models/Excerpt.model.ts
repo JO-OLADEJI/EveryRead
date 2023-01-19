@@ -1,7 +1,7 @@
 import mongoose, { Document, Model, Schema, ObjectId } from "mongoose";
 import Joi from "joi";
 
-interface IExcerpt {
+export interface IExcerpt {
   content: string;
   note: ObjectId; // ID for note excerpt is part of
 }

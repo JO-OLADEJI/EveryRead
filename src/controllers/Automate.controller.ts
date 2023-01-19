@@ -1,9 +1,11 @@
-// 1. Add nodemailer to email excerpts
-// 2. Batch excerpts together in a mail [3 times mailing in a day]
+// 1. Batch excerpts together in a mail [3 times mailing in a day]
 
+import fs from "fs";
 import { ObjectId } from "mongoose";
 import cron, { ScheduledTask } from "node-cron";
+import MailController from "./Mail.controller";
 import Excerpt from "../models/Excerpt.model";
+import Note from "../models/Note.model";
 
 class AutomateController {
   // number of reviews for each excerpt
@@ -42,7 +44,8 @@ class AutomateController {
     // │ │ │ │ │ │
     // * * * * * *
 
-    const dateRepr = new Date(msTimestamp);
+    const timezoneOffeset = new Date().getTimezoneOffset();
+    const dateRepr = new Date(msTimestamp + timezoneOffeset * 60 * 1000);
     const timestamp = Math.floor(msTimestamp / 1000);
 
     const minute = Math.floor(timestamp / 60) % 60;
@@ -61,6 +64,12 @@ class AutomateController {
     if (!excerpt) {
       return false;
     }
+    const note = await Note.findById((excerpt.note as any)._id)
+      .select("title subtitle owner")
+      .populate("owner", "email");
+    if (!note) {
+      return false;
+    }
 
     // - clear all queued reminders for excerpt
     this.clearSpacedReminders(excerptId);
@@ -75,16 +84,26 @@ class AutomateController {
     }
 
     // - queue reminders for excerpt
-    scheduledReviews.forEach((reviewMsTimestamp, index) => {
+    scheduledReviews.forEach((reviewMsTimestamp) => {
       // 1. convert each timestamp to parsable node-cron string
       const cronString = this.formatCronString(reviewMsTimestamp);
 
       // 2. schedule 20 tasks for excerpt and track all tasks in an array
-      const task = cron.schedule(cronString, () => {
-        console.log({
-          title: (excerpt.note as any).title,
-          content: excerpt.content,
-        });
+      const task = cron.schedule(cronString, async () => {
+        try {
+          await MailController.sendReminder((note.owner as any).email, {
+            ...excerpt.toObject(),
+            title: note.title,
+            subtitle: note.subtitle,
+          });
+        } catch (error) {
+          // log errors to `src/errors.log` file
+          fs.appendFile(
+            "../errors.log",
+            `\n\n\n${(error as any).message}`,
+            () => {}
+          );
+        }
       });
       scheduledTasks.push(task);
 

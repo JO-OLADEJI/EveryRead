@@ -27,6 +27,7 @@ const noteSchema: Schema<INoteDocument> = new Schema(
       trim: true,
       minlength: 3,
       maxlength: 255,
+      default: "",
     },
     owner: {
       type: Schema.Types.ObjectId,
